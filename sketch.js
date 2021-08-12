@@ -1,9 +1,19 @@
 var trex, trex_running, edges;
 var groundImage,ground,invisibleground;
+var cloud , cloudImage ;
+var score;   
+var o1,o2,o3 ,o4,o5,o6,obstacleGroup;
 
 function preload(){
   trex_running = loadAnimation("trex1.png","trex3.png","trex4.png");
-  groundImage = loadImage("ground2.png")
+  groundImage = loadImage("ground2.png");
+  cloudImage = loadImage('cloud.png');
+o1=loadImage('obstacle1.png');
+o2=loadImage('obstacle2.png');
+o3=loadImage('obstacle3.png');
+o4=loadImage('obstacle4.png');
+o5=loadImage('obstacle5.png');
+o6=loadImage('obstacle6.png');
 }
 
 function setup(){
@@ -28,19 +38,21 @@ ground.velocityX= -4;
  
 invisibleground=createSprite(200,190,400,10);
 invisibleground.visible=false;
-
+console.log('Hello'+5);
+score = 0;
 }
 
 
 function draw(){
   //set background color 
-  background(220);
-  
-
+  background(160);
+  fill('red');
+  text('score='+score,500,50);
+ score=score+Math.round(frameCount/60);
   
   
   //jump when space key is pressed
-  if(keyDown("space")&& trex.y>=150){
+  if(keyDown("space")&& trex.y>=125){
     trex.velocityY = -10;
   }
   
@@ -54,6 +66,72 @@ if(ground.x<0){
 
   //stop trex from falling down
   trex.collide(invisibleground);
+
+  spawnclouds();
+
+  spawnObstacles();
+
   drawSprites();
 
 }
+
+function spawnclouds(){
+if(frameCount % 60==0){
+
+cloud=createSprite(600,100,40,10);
+cloud.addImage(cloudImage)
+cloud.velocityX=-3;
+cloud.scale=0.1;
+cloud.y=Math.round(random(10,60));
+cloud.lifetime=200;
+cloud.depth= trex.depth
+trex.depth=trex.depth+1
+
+}
+
+}
+
+function spawnObstacles(){
+if(frameCount % 60==0){
+  var obstacle=createSprite(400,165,10,40);
+ obstacle.velocityX=-6
+
+ // generating random obstacles
+ var rand=Math.round(random(1,6));
+
+ switch(rand){
+   case 1: obstacle.addImage(o1);
+   break;
+   case 2: obstacle.addImage(o2);
+   break;
+   case 3: obstacle.addImage(o3);
+   break;
+   case 4: obstacle.addImage(o4);
+   break;
+   case 5: obstacle.addImage(o5);
+   break;
+   case 6: obstacle.addImage(o6);
+   break;
+  default:break;
+  
+ }
+obstacle.scale=0.5;
+obstacle.lifetime=300;
+
+
+
+}
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
