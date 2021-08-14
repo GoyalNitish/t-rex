@@ -1,8 +1,11 @@
 var trex, trex_running, edges;
 var groundImage,ground,invisibleground;
-var cloud , cloudImage ;
+var cloud , cloudImage ,cloudGroup ;
 var score;   
 var o1,o2,o3 ,o4,o5,o6,obstacleGroup;
+var PLAY=1;
+var END=0;
+var gamestate=PLAY;
 
 function preload(){
   trex_running = loadAnimation("trex1.png","trex3.png","trex4.png");
@@ -32,7 +35,7 @@ function setup(){
 ground=createSprite(200,180,400,20);
 ground.addImage("ground", groundImage);
 ground.x=ground.width/2;
-ground.velocityX= -4;
+
 
 // create invisible ground
  
@@ -40,6 +43,9 @@ invisibleground=createSprite(200,190,400,10);
 invisibleground.visible=false;
 console.log('Hello'+5);
 score = 0;
+
+obstacleGroup= new Group();
+cloudGroup=createGroup();
 }
 
 
@@ -48,10 +54,14 @@ function draw(){
   background(160);
   fill('red');
   text('score='+score,500,50);
- score=score+Math.round(frameCount/60);
-  
-  
-  //jump when space key is pressed
+
+
+  if(gamestate===PLAY){
+    ground.velocityX= -4; 
+
+    score=score+Math.round(frameCount/60);
+
+      //jump when space key is pressed
   if(keyDown("space")&& trex.y>=125){
     trex.velocityY = -10;
   }
@@ -64,14 +74,26 @@ if(ground.x<0){
   ground.x=ground.width/2
 }
 
+spawnclouds();
+
+spawnObstacles();
+
+if(trex.isTouching(obstacleGroup)){
+  gamestate=END;
+}
+  }
+
+else if (gamestate===END){
+  cloudGroup.setVelocityXEach(0);
+  obstacleGroup.setVelocityXEach(0);  
+  ground.velocityX=0;
+}
+
+
   //stop trex from falling down
   trex.collide(invisibleground);
 
-  spawnclouds();
-
-  spawnObstacles();
-
-  drawSprites();
+ 
 
 }
 
@@ -87,6 +109,8 @@ cloud.lifetime=200;
 cloud.depth= trex.depth
 trex.depth=trex.depth+1
 
+// adding clod to a group
+cloudGroup.add(cloud);
 }
 
 }
@@ -118,7 +142,7 @@ if(frameCount % 60==0){
 obstacle.scale=0.5;
 obstacle.lifetime=300;
 
-
+obstacleGroup.add(obstacle);
 
 }
 
