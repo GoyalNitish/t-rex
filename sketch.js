@@ -1,4 +1,4 @@
-var trex, trex_running, edges;
+var trex, trex_running,trexcolidedImg, edges;
 var groundImage,ground,invisibleground;
 var cloud , cloudImage ,cloudGroup ;
 var score;   
@@ -6,6 +6,7 @@ var o1,o2,o3 ,o4,o5,o6,obstacleGroup;
 var PLAY=1;
 var END=0;
 var gamestate=PLAY;
+var gameovereImg,restartImg;
 
 function preload(){
   trex_running = loadAnimation("trex1.png","trex3.png","trex4.png");
@@ -17,6 +18,10 @@ o3=loadImage('obstacle3.png');
 o4=loadImage('obstacle4.png');
 o5=loadImage('obstacle5.png');
 o6=loadImage('obstacle6.png');
+
+restartImg=loadImage('restart.png');
+gameovereImg=loadImage('gameOver.png');
+trexcolidedImg=loadAnimation('trex_collided.png');
 }
 
 function setup(){
@@ -25,6 +30,7 @@ function setup(){
   // creating trex
   trex = createSprite(50,160,20,50);
   trex.addAnimation("running", trex_running);
+  trex.addAnimation('collided',trexcolidedImg);
   edges = createEdgeSprites();
   
   //adding scale and position to trex
@@ -46,6 +52,18 @@ score = 0;
 
 obstacleGroup= new Group();
 cloudGroup=createGroup();
+
+var gameover=createSprite(300,100);
+gameover.addImage(gameovereImg);
+gameover.scale=0.5;
+
+var restart=createSprite(300,150);
+restart.addImage(restartImg);
+restart.scale=0.5;
+
+//trex set colider
+trex.setCollider('circle',0,0,40);
+trex.debug=true
 }
 
 
@@ -57,6 +75,9 @@ function draw(){
 
 
   if(gamestate===PLAY){
+    restart.visible=false;
+   // gameover.visible = false
+  
     ground.velocityX= -4; 
 
     score=score+Math.round(frameCount/60);
@@ -84,11 +105,19 @@ if(trex.isTouching(obstacleGroup)){
   }
 
 else if (gamestate===END){
+  //restart.visible = true
+ // gameover.visible = true
   cloudGroup.setVelocityXEach(0);
   obstacleGroup.setVelocityXEach(0);  
   ground.velocityX=0;
+  trex.velocityY=0;
+  trex.changeAnimation(trexcolidedImg);
+  
+  obstacleGroup.setLifetimeEach(-1);
+  cloudGroup.setLifetimeEach(-1);
 }
 
+drawSprites();
 
   //stop trex from falling down
   trex.collide(invisibleground);
